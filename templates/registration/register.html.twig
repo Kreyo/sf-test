@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register!{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" onchange="validateEmail()" />
+        <span id="error"></span>
+        {{ form_row(form.password.first) }}
+        {{ form_row(form.password.second) }}
+
+        <button type="submit" id="submit">Register!</button>
+    {{ form_end(form) }}
+{% endblock %}
+{% block javascripts %}
+    <script>
+        function validateEmail() {
+            const email = document.getElementById('email').value;
+            fetch(`/validate-email/${email}`)
+                .then((response) => {
+                    if (response.status === 200) {
+                        document.getElementById('error').innerHTML = 'Email is available!';
+                    } else {
+                        document.getElementById('error').innerHTML = 'User already taken :(';
+                    }
+                });
+        }
+    </script>
+{% endblock %}

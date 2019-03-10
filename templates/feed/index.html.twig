@@ -1,4 +1,9 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <h1>Number is {{ number }}</h1>
+    <h1>Feed parser</h1>
+    {% for item in feed %}
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.summary | raw }}</p>
+        <br />
+    {% endfor %}
 {% endblock %}

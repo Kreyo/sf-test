@@ -2,16 +2,21 @@
 
 namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
 
 class FeedController extends AbstractController
 {
+    /**
+     * @Route("/", name="index")
+     */
     public function index()
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
-        $number = random_int(0, 100);
+        $feed = 'https://www.theregister.co.uk/software/headlines.atom';
+        $arrayFeed = (array) simplexml_load_file($feed);
 
         return $this->render('feed/index.html.twig', [
-            'number' => $number,
+            'feed' => $arrayFeed['entry'],
         ]);
     }
 }

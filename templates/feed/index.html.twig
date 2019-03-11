@@ -1,9 +1,45 @@
 {% extends 'base.html.twig' %}
 {% block body %}
     <h1>Feed parser</h1>
+    <ul id="stats">
+    </ul>
     {% for item in feed %}
         <h3>{{ item.title }}</h3>
         <p>{{ item.summary | raw }}</p>
         <br />
     {% endfor %}
+{% endblock %}
+{% block javascripts %}
+    <script>
+        function calcWordFreq(s) {
+            s = s.toLowerCase();
+            s = s.replace(/["“”(\[{}\])]|\B['‘]([^'’]+)['’]/g, '$1');
+            s = s.replace(/[‒–—―…]|--|\.\.\./g, ' ');
+            s = s.replace(/[!?;:.,]\B/g, '');
+            return s.match(/\S+/g).reduce(function(oFreq, sWord) {
+                if (oFreq.hasOwnProperty(sWord)) ++oFreq[sWord];
+                else oFreq[sWord] = 1;
+                return oFreq;
+            }, {});
+        }
+        const totalCount = calcWordFreq(document.body.innerText);
+        const sortedWords = [];
+        for (let key in totalCount) {
+            sortedWords.push([key, totalCount[key]]);
+        }
+        sortedWords.sort(function(a, b) {
+            return b[1] - a[1];
+        });
+
+        {% include 'js/commonWords.js' %}
+
+        const filteredWords = sortedWords.filter(word => commonWords.indexOf(word[0]) === -1);
+        
+        for (let index = 0; index <10; index++) {
+            let node = document.createElement('LI');
+            let textnode = document.createTextNode(`${filteredWords[index][0]} - ${filteredWords[index][1]}`);
+            node.appendChild(textnode);
+            document.getElementById('stats').appendChild(node);
+        }
+    </script>
 {% endblock %}
